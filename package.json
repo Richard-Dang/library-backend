@@ -12,6 +12,7 @@
   "dependencies": {
     "apollo-server": "^2.14.0",
     "graphql": "^15.0.0",
+    "mongoose": "^5.9.16",
     "uuid": "^8.1.0"
   },
   "devDependencies": {
