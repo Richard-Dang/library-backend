@@ -21,4 +21,6 @@ const allBooks = async (root, args) => {
   return await Book.find(filteredQuery).populate("author");
 };
 
-module.exports = { allAuthors, authorCount, bookCount, allBooks };
+const me = (root, args, { currentUser }) => currentUser;
+
+module.exports = { allAuthors, authorCount, bookCount, allBooks, me };
