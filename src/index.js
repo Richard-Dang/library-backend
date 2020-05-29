@@ -1,8 +1,14 @@
 const { ApolloServer, gql } = require("apollo-server");
-const { v1: uuid } = require("uuid");
 const mongoose = require("mongoose");
 const Book = require("./models/book");
 const Author = require("./models/author");
+const {
+  authorCount,
+  bookCount,
+  allBooks,
+  allAuthors,
+} = require("./resolvers/queries");
+const { addBook, editAuthor } = require("./resolvers/mutations");
 
 const MONGO_URI =
   "mongodb+srv://RichardDang:danggiahoa@cluster0-izq2r.mongodb.net/library?authSource=admin&replicaSet=Cluster0-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true";
@@ -48,69 +54,6 @@ const typeDefs = gql`
   }
 `;
 
-const authorCount = async () => await Author.countDocuments({});
-
-const bookCount = async () => await Book.countDocuments({});
-
-const allBooks = async (root, args) => {
-  const filteredQuery = {};
-
-  if (args.genre) {
-    filteredQuery.genres = args.genre;
-  }
-  if (args.author) {
-    const author = await Author.find({ name: args.author });
-    filteredQuery.author = author;
-  }
-
-  return await Book.find(filteredQuery).populate("author");
-};
-
-const allAuthors = async () => await Author.find({});
-
-const numBooks = async (root) => {
-  const author = await Author.find({ name: root.name });
-  return await Book.countDocuments({ author });
-};
-
-const addBook = async (root, args) => {
-  const authors = await Author.find({});
-  let author = null;
-
-  if (authors.find((a) => a.name === args.author)) {
-    author = Author.find({ name: args.author });
-  } else {
-    const newAuthor = {
-      name: args.author,
-      born: null,
-    };
-    author = new Author(newAuthor);
-    await author.save();
-  }
-
-  const book = new Book({ ...args, author });
-
-  try {
-    await book.save();
-  } catch (error) {
-    console.log("err", err);
-  }
-  return book;
-};
-
-const editAuthor = async (root, args) => {
-  const { name, setBornTo: born } = args;
-  const author = await Author.findOneAndUpdate(
-    { name },
-    { name, born },
-    {
-      new: true,
-    }
-  );
-
-  return author;
-};
-
 const resolvers = {
   Query: {
     authorCount,
@@ -119,7 +62,10 @@ const resolvers = {
     allAuthors,
   },
   Author: {
-    numBooks,
+    numBooks: async (root) => {
+      const author = await Author.find({ name: root.name });
+      return await Book.countDocuments({ author });
+    },
   },
   Mutation: {
     addBook,
