@@ -13,20 +13,20 @@ const addBook = async (root, args, { currentUser }) => {
   let author = null;
 
   if (authors.find((a) => a.name === args.author)) {
-    author = await Author.find({ name: args.author });
+    author = await Author.findOne({ name: args.author });
   } else {
     const newAuthor = {
       name: args.author,
       born: null,
     };
     author = new Author(newAuthor);
-    await author.save();
   }
 
   const book = new Book({ ...args, author });
 
   try {
     await book.save();
+    await author.save();
   } catch (error) {
     throw new UserInputError(error.message, {
       invalidArgs: args,
