@@ -22,17 +22,18 @@ const addBook = async (root, args, { currentUser }) => {
     author = new Author(newAuthor);
   }
 
-  const book = new Book({ ...args, author });
-
-  try {
-    await book.save();
-    await author.save();
-  } catch (error) {
-    throw new UserInputError(error.message, {
-      invalidArgs: args,
-    });
+  if (author) {
+    const book = new Book({ ...args, author });
+    try {
+      await book.save();
+      await author.save();
+    } catch (error) {
+      throw new UserInputError(error.message, {
+        invalidArgs: args,
+      });
+    }
+    return book;
   }
-  return book;
 };
 
 const editAuthor = async (root, args, { currentUser }) => {

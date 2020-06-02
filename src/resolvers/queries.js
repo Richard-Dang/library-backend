@@ -18,11 +18,20 @@ const allBooks = async (root, args) => {
     filteredQuery.author = author;
   }
 
-  return await Book.find(filteredQuery).populate("author");
+  const res = await Book.find(filteredQuery).populate("author");
+  console.log("res", res);
+  return res;
 };
 
 const allGenres = async (root, args) => await Book.distinct("genres");
 
 const me = (root, args, { currentUser }) => currentUser;
 
-module.exports = { allAuthors, authorCount, bookCount, allBooks, me, allGenres };
+module.exports = {
+  allAuthors,
+  authorCount,
+  bookCount,
+  allBooks,
+  me,
+  allGenres,
+};
