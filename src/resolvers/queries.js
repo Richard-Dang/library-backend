@@ -18,9 +18,7 @@ const allBooks = async (root, args) => {
     filteredQuery.author = author;
   }
 
-  const res = await Book.find(filteredQuery).populate("author");
-  console.log("res", res);
-  return res;
+  return await Book.find(filteredQuery).populate("author");
 };
 
 const allGenres = async (root, args) => await Book.distinct("genres");
