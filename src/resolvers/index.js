@@ -10,12 +10,6 @@ const resolvers = {
   Query,
   Mutation,
   Subscription,
-  Author: {
-    numBooks: async (root) => {
-      const author = await Author.find({ name: root.name });
-      return await Book.countDocuments({ author });
-    },
-  },
 };
 
 module.exports = resolvers;

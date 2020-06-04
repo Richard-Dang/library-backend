@@ -15,10 +15,12 @@ const mutation = (pubsub) => {
 
     if (authors.find((a) => a.name === args.author)) {
       author = await Author.findOne({ name: args.author });
+      author.numBooks += 1;
     } else {
       const newAuthor = {
         name: args.author,
         born: null,
+        numBooks: 1,
       };
       author = new Author(newAuthor);
     }
@@ -47,7 +49,7 @@ const mutation = (pubsub) => {
     const { name, setBornTo: born } = args;
     const author = await Author.findOneAndUpdate(
       { name },
-      { name, born },
+      { $set: { born } },
       {
         new: true,
       }
